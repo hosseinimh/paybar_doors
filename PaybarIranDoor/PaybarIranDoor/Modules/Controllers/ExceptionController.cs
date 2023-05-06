@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Reflection;
 using System.Windows.Forms;
+using Aryoo.Common;
+using Aryoo.Forms;
 
 namespace PaybarIranDoor.Modules.Controllers
 {

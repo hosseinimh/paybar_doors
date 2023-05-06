@@ -1,10 +1,9 @@
 ﻿using System;
-using System.IO;
 using System.Reflection;
-using System.Text;
-using System.Windows.Forms;
-using PaybarTariff.Models;
+using PaybarIranDoor.Models;
 using PaybarIranDoor.Modules.Enums;
+using RECORD = System.Collections.Generic.List<System.Collections.Generic.KeyValuePair<string, object>>;
+using RECORDS = System.Collections.Generic.List<System.Collections.Generic.List<System.Collections.Generic.KeyValuePair<string, object>>>;
 
 namespace PaybarIranDoor.Modules.Controllers
 {
@@ -21,7 +20,7 @@ namespace PaybarIranDoor.Modules.Controllers
         {
             try
             {
-                Validate(name, family, phone, plaque, cargo);
+                Validate(ref name, ref family, ref phone, ref plaque, ref cargo);
                 mTable.Insert((byte)type, name, family, nationalNo, phone, plaque, cargo);
             }
             catch (Exception e)
@@ -34,7 +33,7 @@ namespace PaybarIranDoor.Modules.Controllers
         {
             try
             {
-                Validate(name, family, phone, plaque, cargo);
+                Validate(ref name, ref family, ref phone, ref plaque, ref cargo);
                 mTable.Update(id, (byte)type, name, family, nationalNo, phone, plaque, cargo);
             }
             catch (Exception e)
@@ -43,7 +42,7 @@ namespace PaybarIranDoor.Modules.Controllers
             }
         }
 
-        public List<KeyValuePair<string, object>> Get(int id)
+        public RECORD Get(int id)
         {
             try
             {
@@ -57,10 +56,8 @@ namespace PaybarIranDoor.Modules.Controllers
             return null;
         }
 
-        public List<List<KeyValuePair<string, object>>> GetPaginate(int page = 1)
+        public RECORDS GetPaginate(int page = 1)
         {
-            AryooSqlEnumerator enumerator = null;
-
             try
             {
                 return mTable.GetPaginate(page);
@@ -73,13 +70,13 @@ namespace PaybarIranDoor.Modules.Controllers
             return null;
         }
 
-        private void Validate(string name, string family, string phone, string plaque, string cargo)
+        private void Validate(ref string name, ref string family, ref string phone, ref string plaque, ref string cargo)
         {
-            Utils.ValidateString(name);
-            Utils.ValidateString(family);
-            Utils.ValidateString(phone);
-            Utils.ValidateString(plaque);
-            Utils.ValidateString(cargo);
+            Utils.ValidateString(ref name);
+            Utils.ValidateString(ref family);
+            Utils.ValidateString(ref phone);
+            Utils.ValidateString(ref plaque);
+            Utils.ValidateString(ref cargo);
         }
     }
 }

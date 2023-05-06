@@ -1,59 +1,56 @@
-﻿using System.Collections.Generic;
-using MySql.Data.MySqlClient;
+﻿using MySql.Data.MySqlClient;
 using PaybarIranDoor.Modules;
+using PaybarIranDoor.Models.Base;
+using FIELD = System.Collections.Generic.KeyValuePair<string, object>;
+using RECORD = System.Collections.Generic.List<System.Collections.Generic.KeyValuePair<string, object>>;
 
 namespace PaybarIranDoor.Models
 {
-    public class Setting
+    public class Setting : BaseTable
     {
-        private MySqlConnection sConnection;
-
-        public Setting()
+        public Setting() : base()
         {
-            sConnection.Connect();
-            if (Count()==0)
+            if (Count() == 0)
             {
                 Insert();
             }
         }
 
-        public List<KeyValuePair<string, object>> Get(int id)
+        public RECORD Get()
         {
-            var sql = string.Format("SELECT * FROM tbl_settings WHERE id={0}", id);
-            using (MySqlDataReader reader = sConnection.ExecuteReader(sql))
-            {
-                var record = new List<KeyValuePair<string, object>>();
-                if (reader.Read())
-                {
-                    return GetRecord(reader);
-                }
-            }
-            return null;
+            var sql = "SELECT * FROM tbl_settings WHERE id=1";
+            return Get(sql);
+        }
+
+        public int Update(int transitEntrance, int transitScan, int transhipmentEntrance, int transhipmentScan, int transhipmentTonage)
+        {
+            var sql = string.Format("UPDATE tbl_settings SET transit_entrance={0},transit_scan={1},transhipment_entrance={2},transhipment_scan={3},transhipment_tonage={4},updated_at={5} WHERE id=1", transitEntrance, transitScan, transhipmentEntrance, transhipmentScan, transhipmentTonage, Utils.DateToString());
+            return ExecuteNonQuery(sql);
         }
 
         private int Insert()
         {
-            var sql = string.Format("INSERT INTO tbl_settings (transit_entrance,transit_scan,transhipment_entrance,transhipment_scan,transhipment_tonage,created_at) VALUES({0},{1},{2},{3},{4},'{5}')", 0, 0, 0, 0, 0, Utils.DateToString());
-            return sConnection.ExecuteNonQuery(sql);
+            var sql = string.Format("INSERT INTO tbl_settings (id,transit_entrance,transit_scan,transhipment_entrance,transhipment_scan,transhipment_tonage,created_at) VALUES(1,{0},{1},{2},{3},{4},'{5}')", 0, 0, 0, 0, 0, Utils.DateToString());
+            return ExecuteNonQuery(sql);
         }
 
         private int Count()
         {
             var sql = "SELECT COUNT(*) FROM tbl_settings";
-            return (int)sConnection.ExecuteScalar(sql);
+            return (int)ExecuteScalar(sql);
         }
 
-        private List<KeyValuePair<string, object>> GetRecord(MySqlDataReader reader)
+        private new RECORD GetRecord(MySqlDataReader reader)
         {
-            var record = new List<KeyValuePair<string, object>>();
-            record.Add(new KeyValuePair<string, object>("id", reader.GetInt32(0)));
-            record.Add(new KeyValuePair<string, object>("transit_entrance", reader.GetInt32(1)));
-            record.Add(new KeyValuePair<string, object>("transit_scan", reader.GetInt32(2)));
-            record.Add(new KeyValuePair<string, object>("transhipment_entrance", reader.GetInt32(3)));
-            record.Add(new KeyValuePair<string, object>("transhipment_scan", reader.GetInt32(4)));
-            record.Add(new KeyValuePair<string, object>("transhipment_tonage", reader.GetInt32(5)));
-            record.Add(new KeyValuePair<string, object>("created_at", reader.GetString(6)));
-            record.Add(new KeyValuePair<string, object>("updated_at", reader.GetString(7)));
+            var record = new RECORD();
+            record.Add(new FIELD("id", reader.GetInt32(0)));
+            record.Add(new FIELD("transit_entrance", reader.GetInt32(1)));
+            record.Add(new FIELD("transit_scan", reader.GetInt32(2)));
+            record.Add(new FIELD("transhipment_entrance", reader.GetInt32(3)));
+            record.Add(new FIELD("transhipment_scan", reader.GetInt32(4)));
+            record.Add(new FIELD("transhipment_tonage", reader.GetInt32(5)));
+            record.Add(new FIELD("created_at", reader.GetString(6)));
+            record.Add(new FIELD("updated_at", reader.GetString(7)));
             return record;
         }
     }

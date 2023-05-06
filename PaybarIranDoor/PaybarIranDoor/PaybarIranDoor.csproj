@@ -34,7 +34,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AryooModules">
-      <HintPath>..\..\Naft\Naft\bin\Debug\AryooModules.dll</HintPath>
+      <HintPath>..\..\..\Naft\Naft\bin\Debug\AryooModules.dll</HintPath>
     </Reference>
     <Reference Include="MySql.Data, Version=8.0.29.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -69,12 +69,18 @@
     <Compile Include="Forms\Settings\SettingsForm.Designer.cs">
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Models\Base\BaseTable.cs" />
+    <Compile Include="Models\Cargo.cs" />
     <Compile Include="Models\Setting.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\Error.cs" />
-    <Compile Include="Models\MySqlConnection.cs" />
+    <Compile Include="Models\Base\BaseConnection.cs" />
+    <Compile Include="Modules\Controllers\UserController.cs" />
+    <Compile Include="Modules\Controllers\SettingController.cs" />
+    <Compile Include="Modules\Controllers\CargoController.cs" />
     <Compile Include="Modules\Controllers\ErrorController.cs" />
     <Compile Include="Modules\Controllers\ExceptionController.cs" />
+    <Compile Include="Modules\Enums\CargoOperationType.cs" />
     <Compile Include="Modules\Enums\UserRole.cs" />
     <Compile Include="Modules\Utils.cs" />
     <Compile Include="Program.cs" />

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reflection;
-using Aryoo.Common;
 using PaybarIranDoor.Models;
 using PaybarIranDoor.Modules.Enums;
 using RECORD = System.Collections.Generic.List<System.Collections.Generic.KeyValuePair<string, object>>;
@@ -8,43 +7,21 @@ using RECORDS = System.Collections.Generic.List<System.Collections.Generic.List<
 
 namespace PaybarIranDoor.Modules.Controllers
 {
-    public class ErrorController
+    public class UserController
     {
-        private Error mTable;
+        private User mTable;
 
-        public ErrorController()
+        public UserController()
         {
-            mTable = new Error();
+            mTable = new User();
         }
 
-        public static void LogError(AryooException e)
+        private void Add(string username, string password, string name, string family, UserRole role)
         {
             try
             {
-                ErrorController errorController = new ErrorController();
-                errorController.Add(e.Class, e.Function, e.Message);
-            }
-            catch
-            {
-            }
-        }
-
-        private void Add(string className, string function, string message)
-        {
-            try
-            {
-                mTable.Insert(className, function, Make(message));
-            }
-            catch
-            {
-            }
-        }
-
-        public void RemoveErrors()
-        {
-            try
-            {
-                mTable.DeleteAll();
+                Validate(ref name, ref family);
+                mTable.Insert(username, password, name, family, (byte)role);
             }
             catch (Exception e)
             {
@@ -52,7 +29,20 @@ namespace PaybarIranDoor.Modules.Controllers
             }
         }
 
-        public RECORD GetError(int id)
+        private void Edit(int id, string name, string family, UserRole role)
+        {
+            try
+            {
+                Validate(ref name, ref family);
+                mTable.Update(id, name, family, (byte)role);
+            }
+            catch (Exception e)
+            {
+                ExceptionController.LogError(e, MethodInfo.GetCurrentMethod());
+            }
+        }
+
+        public RECORD Get(int id)
         {
             try
             {
@@ -66,7 +56,7 @@ namespace PaybarIranDoor.Modules.Controllers
             return null;
         }
 
-        public RECORDS GetErrors(int page = 1)
+        public RECORDS GetPaginate(int page = 1)
         {
             try
             {
@@ -80,9 +70,10 @@ namespace PaybarIranDoor.Modules.Controllers
             return null;
         }
 
-        private string Make(string message)
+        private void Validate(ref string name, ref string family)
         {
-            return message.Replace('\'', ' ');
+            Utils.ValidateString(ref name);
+            Utils.ValidateString(ref family);
         }
     }
 }

@@ -1,7 +1,9 @@
 ﻿using System;
-using System.Data;
-using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
+using Aryoo.Forms;
+using PaybarIranDoor.Modules.Controllers;
+using RECORD = System.Collections.Generic.List<System.Collections.Generic.KeyValuePair<string, object>>;
 
 namespace PaybarIranDoor.Forms
 {
@@ -13,80 +15,50 @@ namespace PaybarIranDoor.Forms
         {
             InitializeComponent();
             SortByTabOrders();
-
             try
             {
                 settingController = new SettingController();
-
                 FillItems();
             }
             catch
             {
                 settingController = null;
             }
-
-            antbPrice.Select();
-            antbPrice.Focus();
-            atbHeader.OnSpecialKeyDown(AtbHeader_PreviewKeyDown);
+            antbTransitEntrance.Select();
+            antbTransitEntrance.Focus();
         }
 
         private void FillItems()
         {
             try
             {
-                AryooDataRow row = settingController.GetSettings();
-
-                if (row != null)
+                RECORD record = settingController.Get();
+                if (record != null)
                 {
-                    antbPrice.Value = (int)row["Price"];
-                    atbFirstNo.Text = row["FirstNo"].ToString();
-                    atbHeader.Text = row["Header"].ToString();
+                    antbTransitEntrance.Value = (int)record[1].Value;
+                    antbTransitScan.Value = (int)record[2].Value;
+                    antbTranshipmentEntrance.Value = (int)record[3].Value;
+                    antbTranshipmentScan.Value = (int)record[4].Value;
+                    antbTranshipmentTonage.Value = (int)record[5].Value;
                 }
             }
             catch (Exception ex)
             {
-                ExceptionController.LogError(ex, System.Reflection.MethodInfo.GetCurrentMethod());
+                ExceptionController.LogError(ex, MethodInfo.GetCurrentMethod());
             }
         }
 
         protected override bool ValidateForm()
         {
             bool validate = base.ValidateForm();
-
             if (validate)
             {
                 try
                 {
-                    if (!antbPrice.Validate())
+                    if (!antbTransitEntrance.Validate())
                     {
                         tcSettings.SelectTab(0);
-
-                        throw new ValidateException(antbPrice, "لطفا بهای هر لیتر را وارد نمایید");
-                    }
-
-                    if (!atbFirstNo.Validate())
-                    {
-                        tcSettings.SelectTab(0);
-
-                        throw new ValidateException(atbFirstNo, "لطفا شماره اولیه قبض را وارد نمایید");
-                    }
-
-                    if (!atbHeader.Validate())
-                    {
-                        tcSettings.SelectTab(0);
-
-                        throw new ValidateException(atbHeader, "لطفا عنوان جایگاه را وارد نمایید");
-                    }
-
-                    try
-                    {
-                        Int32.Parse(atbFirstNo.Text);
-                    }
-                    catch
-                    {
-                        tcSettings.SelectTab(0);
-
-                        throw new ValidateException(atbFirstNo, "لطفا شماره اولیه قبض را به صورت صحیح وارد نمایید");
+                        throw new ValidateException(antbTransitEntrance, "لطفا هزینه ورود ناوگان ایرانی را وارد نمایید");
                     }
                 }
                 catch (ValidateException e)
@@ -94,14 +66,9 @@ namespace PaybarIranDoor.Forms
                     validate = false;
                     aErrorProvider.Text = e.Message;
                     e.Control.Select();
-
                     if (e.Control is AryooTextBox)
                     {
                         (e.Control as AryooTextBox).Blink();
-                    }
-                    else if (e.Control is AryooComboBox)
-                    {
-                        (e.Control as AryooComboBox).Blink();
                     }
                 }
                 catch
@@ -113,32 +80,23 @@ namespace PaybarIranDoor.Forms
             return validate;
         }
 
-        #region Events
-
         private void OK()
         {
             try
             {
                 if (ValidateForm())
                 {
-                    settingController.SetSettings(AryooString.MakePersian(atbHeader.Text), 0, atbFirstNo.Text, antbPrice.Value);
-
+                    settingController.Edit(antbTransitEntrance.Value, antbTransitScan.Value, antbTranshipmentEntrance.Value, antbTranshipmentScan.Value, antbTranshipmentTonage.Value);
                     DialogResult = DialogResult.OK;
                 }
             }
             catch (Exception ex)
             {
-                ExceptionController.LogError(ex, System.Reflection.MethodInfo.GetCurrentMethod());
+                ExceptionController.LogError(ex, MethodInfo.GetCurrentMethod());
             }
         }
-        #endregion
 
         private void btnOK_Click(object sender, EventArgs e)
-        {
-            OK();
-        }
-
-        private void AtbHeader_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
             OK();
         }
