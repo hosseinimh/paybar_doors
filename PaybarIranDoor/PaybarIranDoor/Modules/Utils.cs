@@ -9,6 +9,11 @@ namespace PaybarIranDoor.Modules
             return DateTime.Now.ToString("yyyy’-‘MM’-‘dd’ ’HH’:’mm’:’ss");
         }
 
+        public static void ValidateString(string ref message)
+        {
+            message = message.Replace('\'', '').Replace('"', '');
+        }
+
         public static int PageItems
         {
             get { return 50; }
